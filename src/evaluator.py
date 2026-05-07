@@ -4,7 +4,7 @@
 # then run the engine and compare.
 
 from searcher import search
-from tfidf    import rank_results
+from tfidf    import rank
 
 
 # ═════════════════════════════════════════════════════════════
@@ -156,9 +156,9 @@ def evaluate(index, ground_truth=None, top_n=10):
 
         # Run the search
         search_result = search(query_str, index, language=language)
-        ranked        = rank_results(
-            search_result["matches"],
+        ranked        = rank(
             search_result["query_tokens"],
+            search_result["matches"],
             index,
             top_n=top_n,
         )

@@ -5,7 +5,7 @@
 import sys
 from indexer     import get_index
 from searcher    import search
-from tfidf       import rank_results
+from tfidf       import rank
 from spell_check import check_and_suggest
 from evaluator   import evaluate
 from preprocessing import detect_language
@@ -149,9 +149,9 @@ def main():
         language = resolve_language(raw_query)
 
         search_result = search(raw_query, index, language=language)
-        ranked        = rank_results(
-            search_result["matches"],
+        ranked        = rank(
             search_result["query_tokens"],
+            search_result["matches"],
             index,
             top_n=10,
         )
