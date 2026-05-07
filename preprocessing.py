@@ -61,6 +61,30 @@ ARABIC_STOP_WORDS = {
     "حيث", "بين", "دون", "تحت", "فوق", "امام", "خلف",
 }
 
+# detect_language
+
+
+def detect_language(text):
+    """
+    Detect if text is:
+    - English
+    - Arabic
+    - Mixed (returns English by requirement)
+    """
+
+    if not text or not text.strip():
+        raise ValueError("empty text provided for language detection.")
+    
+    if re.search(r'[a-zA-Z]', text):
+        # if mixed, we default to English as per requirement
+        #
+        return "english" 
+    
+
+    elif re.search(r'[\u0600-\u06FF]', text):
+        return "arabic"
+    
+    raise ValueError("Unable to detect language. Text may be empty or contain unsupported characters.")
 
 
 # ENGLISH PIPELINE
