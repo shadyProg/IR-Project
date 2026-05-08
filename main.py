@@ -4,6 +4,7 @@
 
 import os
 import sys
+import re
 
 # Fix Windows console encoding for Arabic output
 sys.stdout.reconfigure(encoding='utf-8', errors='replace')
@@ -131,6 +132,12 @@ def main():
             continue
 
         # ── Commands ──────────────────────────────────────────
+        pattern = r'^[/a-zA-Z\u0600-\u06FF\s]+$'
+
+        if not re.fullmatch(pattern, raw_query):
+            print("\nenter only english or arabic characters, please. ")
+            continue
+
         command = raw_query.lower()
 
         if command in ("/quit", "/exit", "quit", "exit"):

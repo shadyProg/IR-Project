@@ -197,11 +197,10 @@ def stem_arabic(word):
         return word
 
     
-    # tashaphyne light stemmer
-    if ARABIC_STEMMER_AVAILABLE:
+    # ISRI stemmer
+    if NLTK_STEMMERS_AVAILABLE:
         try:
-            stemmer.light_stem(word)
-            return stemmer.get_stem()
+            return _isri.stem(word)
         except Exception:
             pass
 
