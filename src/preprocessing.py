@@ -196,10 +196,17 @@ def stem_arabic(word):
     if len(word) <= 2:
         return word
 
-    if ARABIC_STEMMER_AVAILABLE :
+    # Prefer NLTK's ISRI Stemmer (required by project spec)
+    if NLTK_STEMMERS_AVAILABLE:
+        try:
+            return _isri.stem(word)
+        except Exception:
+            pass
+
+    # Fallback to tashaphyne light stemmer
+    if ARABIC_STEMMER_AVAILABLE:
         try:
             stemmer.light_stem(word)
-            
             return stemmer.get_stem()
         except Exception:
             pass

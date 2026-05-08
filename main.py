@@ -2,12 +2,21 @@
 # Command-line interface for the Bilingual Search Engine.
 # Ties together: indexer, searcher, tfidf, spell_check, evaluator.
 
+import os
 import sys
-from indexer     import get_index
-from searcher    import search
-from tfidf       import rank
-from spell_check import check_and_suggest
-from evaluator   import evaluate
+
+# Fix Windows console encoding for Arabic output
+sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+sys.stderr.reconfigure(encoding='utf-8', errors='replace')
+
+# ── Make src/ importable from the project root ─────────────────────────────────
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "src"))
+
+from indexer       import get_or_build_index
+from searcher      import search
+from tfidf         import rank
+from spell_check   import get_suggestions
+from evaluator     import evaluate
 from preprocessing import detect_language
 
 
@@ -48,11 +57,11 @@ def print_results(ranked, search_result, index):
 
     # ── Spelling suggestions for OOV terms ────────────────────
     if missing:
-        suggestions = check_and_suggest(tokens, index)
-        for term, options in suggestions.items():
-            if options:
+        for term in missing:
+            suggestions = get_suggestions(term, index)
+            if suggestions:
                 print(f"\n  ❓ '{term}' not found.")
-                print(f"     Did you mean: {' | '.join(options)}")
+                print(f"     Did you mean: {' | '.join(suggestions)}")
             else:
                 print(f"\n  ❌ '{term}' not found — no suggestion available.")
 
@@ -66,9 +75,9 @@ def print_results(ranked, search_result, index):
     print(f"  {'#':<4} {'Document':<25} {'Score':>8}")
     print(f"  {THIN}")
 
-    for rank, (doc_id, score) in enumerate(ranked, 1):
+    for pos, (doc_id, score) in enumerate(ranked, 1):
         bar   = "█" * int(score * 20)   # simple visual bar
-        print(f"  {rank:<4} {doc_id:<25} {score:>8.4f}  {bar}")
+        print(f"  {pos:<4} {doc_id:<25} {score:>8.4f}  {bar}")
 
     print()
 
@@ -96,13 +105,13 @@ def main():
     # ── Load or build index ───────────────────────────────────
     print("\nLoading index...")
     try:
-        index = get_index()
+        index = get_or_build_index()
     except FileNotFoundError as e:
         print(f"\n[ERROR] {e}")
-        print("Run 'python fetch_corpus.py' first to download the corpus.")
+        print("Make sure the corpus/ directory exists with english/ and arabic/ sub-folders.")
         sys.exit(1)
 
-    if index["doc_count"] == 0:
+    if not index.get("lang_map"):
         print("[WARNING] Index contains zero documents. Results will be empty.")
 
     print_banner()
@@ -139,7 +148,7 @@ def main():
         if command == "/rebuild":
             print("\nRebuilding index from corpus...")
             try:
-                index = get_index(force_rebuild=True)
+                index = get_or_build_index(force_rebuild=True)
                 print("Index rebuilt successfully.")
             except FileNotFoundError as e:
                 print(f"[ERROR] {e}")

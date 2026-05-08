@@ -209,7 +209,7 @@ def evaluate(index, ground_truth=None, top_n=10):
 # QUICK SELF-TEST  (run: python evaluator.py)
 # ═════════════════════════════════════════════════════════════
 if __name__ == "__main__":
-    from indexer import get_index
+    from indexer import get_or_build_index
 
     print("=" * 55)
     print("Evaluator — Self Test")
@@ -240,7 +240,7 @@ if __name__ == "__main__":
     # Integration test
     print("\n── Full Evaluation (requires built index) ───────────")
     try:
-        idx = get_index()
+        idx = get_or_build_index()
         evaluate(idx)
     except FileNotFoundError:
         print("  [SKIP] Index not found — run fetch_corpus.py and indexer.py first.")
