@@ -61,7 +61,7 @@ def build_index(corpus_dirs: dict[str, str] | None = None) -> dict:
     Parameters
     ----------
     corpus_dirs : dict mapping language label to directory path.
-                  Defaults to the module-level CORPUS_DIRS constant.
+                Defaults to the module-level CORPUS_DIRS constant.
 
     Returns
     -------

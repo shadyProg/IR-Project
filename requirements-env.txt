@@ -1,0 +1,13 @@
+arabic-reshaper==3.0.1
+click==8.3.3
+colorama==0.4.6
+joblib==1.5.3
+nltk==3.9.4
+pathlib==1.0.1
+PyArabic==0.6.15
+pyperclip==1.11.0
+python-bidi==0.6.7
+regex==2026.4.4
+six==1.17.0
+Tashaphyne==0.3.6
+tqdm==4.67.3
