@@ -25,7 +25,7 @@ from typing import Iterable
 
 logger = logging.getLogger(__name__)
 
-# ── tuneable constants ─────────────────────────────────────────────────────────
+
 JACCARD_THRESHOLD: float = 0.2   # Stage 1 filter; candidates below this are dropped
 DEFAULT_K:         int   = 2     # bigram size used for Jaccard
 
@@ -155,22 +155,22 @@ def get_suggestions(
         Sort ascending by distance (ties broken alphabetically).
         Return top_n results.
     """
-    # ── guard: empty or None term ──────────────────────────────────────────────
+    
     if not term:
         return []
 
     vocab: Iterable[str] = index.get("positional_index", {}).keys()
 
-    # ── guard: empty index ─────────────────────────────────────────────────────
+
     vocab_set = set(vocab)
     if not vocab_set:
         return []
 
-    # ── guard: term already in index ──────────────────────────────────────────
+    
     if term in vocab_set:
         return []
 
-    # ── stage 1: Jaccard filter ────────────────────────────────────────────────
+
     term_grams = get_kgrams(term, k=k)
 
     candidates: list[str] = []
@@ -184,7 +184,7 @@ def get_suggestions(
         # No candidates survived the filter
         return []
 
-    # ── stage 2: Levenshtein ranking ───────────────────────────────────────────
+
     ranked = sorted(
         candidates,
         key=lambda candidate: (levenshtein_distance(term, candidate), candidate),
@@ -193,7 +193,6 @@ def get_suggestions(
     return ranked[:top_n] if top_n > 0 else ranked
 
 
-# ── CLI demo ───────────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
     import sys

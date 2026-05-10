@@ -10,7 +10,7 @@ import re
 sys.stdout.reconfigure(encoding='utf-8', errors='replace')
 sys.stderr.reconfigure(encoding='utf-8', errors='replace')
 
-# ── Make src/ importable from the project root ─────────────────────────────────
+#  Make src/ importable from the project root 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "src"))
 
 from indexer       import get_or_build_index
@@ -83,9 +83,6 @@ def print_results(ranked, search_result, index):
     print()
 
 
-# ═════════════════════════════════════════════════════════════
-# LANGUAGE SELECTION HELPER
-# ═════════════════════════════════════════════════════════════
 
 def resolve_language(raw_query):
     """
@@ -98,12 +95,8 @@ def resolve_language(raw_query):
     return lang
 
 
-# ═════════════════════════════════════════════════════════════
-# MAIN LOOP
-# ═════════════════════════════════════════════════════════════
-
 def main():
-    # ── Load or build index ───────────────────────────────────
+
     print("\nLoading index...")
     try:
         index = get_or_build_index()
@@ -117,7 +110,7 @@ def main():
 
     print_banner()
 
-    # ── REPL loop ─────────────────────────────────────────────
+    
     while True:
         try:
             raw_query = input("\nEnter query / اكتب البحث: ").strip()
@@ -126,12 +119,12 @@ def main():
             print("\n\nGoodbye! مع السلامة 👋")
             break
 
-        # ── Empty input ───────────────────────────────────────
+        
         if not raw_query:
             print("  ⚠️  Please enter a search term.")
             continue
 
-        # ── Commands ──────────────────────────────────────────
+
         pattern = r'^[/a-zA-Z\u0600-\u06FF\s]+$'
 
         if not re.fullmatch(pattern, raw_query):
@@ -161,7 +154,7 @@ def main():
                 print(f"[ERROR] {e}")
             continue
 
-        # ── Normal search ─────────────────────────────────────
+    
         language = resolve_language(raw_query)
 
         search_result = search(raw_query, index, language=language)
@@ -175,8 +168,5 @@ def main():
         print_results(ranked, search_result, index)
 
 
-# ═════════════════════════════════════════════════════════════
-# ENTRY POINT
-# ═════════════════════════════════════════════════════════════
 if __name__ == "__main__":
     main()

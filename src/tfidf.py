@@ -32,7 +32,6 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-# ── query vector builder ───────────────────────────────────────────────────────
 
 def _build_query_vector(query_tokens: list, idf_table: dict) -> dict:
     """
@@ -64,7 +63,7 @@ def _build_query_vector(query_tokens: list, idf_table: dict) -> dict:
     return query_vector
 
 
-# ── cosine similarity ──────────────────────────────────────────────────────────
+
 
 def _cosine_similarity(
     query_vector:   dict,
@@ -101,7 +100,6 @@ def _cosine_similarity(
     return dot_product / denominator if denominator > 0 else 0.0
 
 
-# ── main ranking function ──────────────────────────────────────────────────────
 
 def rank(
     query_tokens:      list,
@@ -132,7 +130,7 @@ def rank(
     - top_n <= 0                       -> all results returned (no slice)
     """
 
-    # ── guards ─────────────────────────────────────────────────────────────────
+
     if not query_tokens or not candidate_doc_ids:
         return []
 
@@ -140,7 +138,7 @@ def rank(
     idf_table = index.get("idf_table", {})
     doc_norms = index.get("doc_norms", {})
 
-    # ── build query vector ─────────────────────────────────────────────────────
+
     query_vector = _build_query_vector(query_tokens, idf_table)
 
     if not query_vector:
@@ -148,19 +146,19 @@ def rank(
         logger.warning("Query vector is empty (all terms OOV). Returning unranked.")
         return [(doc_id, 0.0) for doc_id in candidate_doc_ids]
 
-    # ── score every candidate ──────────────────────────────────────────────────
+   
     scored = []
     for doc_id in candidate_doc_ids:
         score = _cosine_similarity(query_vector, doc_id, tf_table, idf_table, doc_norms)
         scored.append((doc_id, score))
 
-    # ── sort highest first ─────────────────────────────────────────────────────
+    #  sort highest first 
     scored.sort(key=lambda pair: pair[1], reverse=True)
 
     return scored if top_n <= 0 else scored[:top_n]
 
 
-# ── CLI demo ───────────────────────────────────────────────────────────────────
+#  CLI demo 
 
 if __name__ == "__main__":
     import sys

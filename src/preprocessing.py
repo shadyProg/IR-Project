@@ -58,7 +58,7 @@ ARABIC_STOP_WORDS = {
     "خلال", "عبر", "ضد", "نحو", "رغم", "وفق", "طبقا", "الا",
     "فقط", "هو", "هي", "هم", "هن", "انا", "نحن", "انت", "انتم",
     "وهذا", "وهذه", "وذلك", "فقد", "لكن", "لكي", "كي", "مما",
-    "حيث", "بين", "دون", "تحت", "فوق", "امام", "خلف",
+    "حيث", "بين", "دون","و", "تحت", "فوق", "امام", "خلف",
 }
 
 # detect_language
@@ -168,10 +168,7 @@ def normalize_arabic (text) :
     text = re.sub(r'[أإآ]', 'ا', text)
     text = re.sub(r'لآ', 'لا', text)
 
-    #text = re.sub(r'ي', 'ى', text) # مشكلة مش هيعرف اشلها في stop word if she على في 
-    # مينفعش اعمل حاجة تاني علشان مبوظش الكلمات
-    #text = re.sub(r'ة', 'ه', text)
-    # مينفعش الهمزات
+    
     return text
 
 
@@ -193,17 +190,24 @@ def stem_arabic(word):
 
     if not word:
         return ""
-    if len(word) <= 2:
+    if len(word) <= 3:
         return word
 
-    
     # ISRI stemmer
-    if NLTK_STEMMERS_AVAILABLE:
+    if NLTK_STEMMERS_AVAILABLE and ARABIC_STEMMER_AVAILABLE:
         try:
-            return _isri.stem(word)
+            
+            result =  _isri.stem(word)
+            if len(result) <= 3:
+                stemmer.light_stem(word)
+                return stemmer.get_stem()
+            else:
+                return result
+            
         except Exception:
             pass
-
+        
+    
     return word   
 
 
@@ -241,9 +245,7 @@ def preprocess(text, language):
         return []
 
 
-# ═════════════════════════════════════════════════════════════
-# QUICK SELF-TEST  (run: python preprocessing.py)
-# ═════════════════════════════════════════════════════════════
+
 if __name__ == "__main__":
     print("=" * 55)
     print("Preprocessing Pipeline — Self Test")
@@ -267,7 +269,7 @@ if __name__ == "__main__":
 
     ar_samples = [
         "الطلاب يدرسون في الجامعات المصرية",
-        "تغير المناخ يؤثر على الاقتصاد العالمي",
+        "تغير المناخ يؤثر على الاقتصاد العالمي محمد كان يحب المهارات و المهارة حب ",
         "",          # edge: empty
         None,        # edge: None
         "في على من", # edge: all stop words
